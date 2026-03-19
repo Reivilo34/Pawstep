@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
+import { usePetData } from './context/PetDataContext';
 import { useEffect } from 'react';
 import LoginPage from './pages/LoginPage';
 import AppLayout from './pages/AppLayout';
@@ -10,11 +11,12 @@ import SantePage from './pages/SantePage';
 import SettingsPage from './pages/SettingsPage';
 
 function App() {
-  const { user, currentPet, pets, loadPetData } = useAuth() as any;
+  const { user, currentPet } = useAuth();
+  const { loadPetData } = usePetData();
 
   useEffect(() => {
     if (currentPet && currentPet.id) {
-      // Load pet data from context or localStorage
+      loadPetData(currentPet.id);
     }
   }, [currentPet]);
 
@@ -37,7 +39,7 @@ function App() {
         <Route path="sante" element={<SantePage />} />
         <Route path="settings" element={<SettingsPage />} />
       </Route>
-      <Route path="/" element={<Navigate to={user ? '/app/accueil' : '/login'} replace />} />
+      <Route path="*" element={<Navigate to={user ? '/app/accueil' : '/login'} replace />} />
     </Routes>
   );
 }

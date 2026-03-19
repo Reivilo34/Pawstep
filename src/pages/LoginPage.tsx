@@ -1,13 +1,18 @@
 import { useState } from 'react';
-import { supabase } from '../supabaseClient';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { supabase, supabaseConfigured } from '../supabaseClient';
 import { PawPrint } from 'lucide-react';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLogin, setIsLogin] = useState(true);
+  const { login, register } = useAuth();
+  const navigate = useNavigate();
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -15,23 +20,22 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      if (isLogin) {
-        // Connexion
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        if (error) throw error;
-      } else {
-        // Inscription
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-        });
-        if (error) throw error;
-        alert('Inscription réussie ! Vous pouvez maintenant vous connecter.');
-        setIsLogin(true);
+      if (supabaseConfigured) {
+        if (isLogin) {
+          const { error } = await supabase.auth.signInWithPassword({ email, password });
+          if (error) throw error;
+        } else {
+          const { error } = await supabase.auth.signUp({ email, password });
+          if (error) throw error;
+        }
       }
+
+      if (isLogin) {
+        login(email, name || email.split('@')[0]);
+      } else {
+        register(email, name || email.split('@')[0]);
+      }
+      navigate('/app/accueil');
     } catch (error: any) {
       setError(error.message || 'Une erreur est survenue.');
     } finally {
@@ -63,7 +67,22 @@ export default function LoginPage() {
                 {error}
               </div>
             )}
-            
+
+            {!isLogin && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Nom</label>
+                <div className="mt-1">
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500"
+                    placeholder="Votre nom"
+                  />
+                </div>
+              </div>
+            )}
+
             <div>
               <label className="block text-sm font-medium text-gray-700">Adresse Email</label>
               <div className="mt-1">
