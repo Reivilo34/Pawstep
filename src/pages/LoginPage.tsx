@@ -1,115 +1,114 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { AlertCircle } from 'lucide-react';
+import { supabase } from '../supabaseClient';
+import { PawPrint } from 'lucide-react';
 
 export default function LoginPage() {
-  const navigate = useNavigate();
-  const { login } = useAuth();
-  const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [isLogin, setIsLogin] = useState(true);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError(null);
+
     try {
       if (isLogin) {
-        login(email, name);
+        // Connexion
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        if (error) throw error;
       } else {
-        login(email, name);
+        // Inscription
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+        });
+        if (error) throw error;
+        alert('Inscription réussie ! Vous pouvez maintenant vous connecter.');
+        setIsLogin(true);
       }
-      navigate('/app/accueil');
+    } catch (error: any) {
+      setError(error.message || 'Une erreur est survenue.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-cream leaf-pattern flex flex-col items-center justify-center px-4 py-8">
-      <div className="w-full max-w-sm">
-        <div className="text-center mb-8">
-          <div className="flex justify-center mb-4">
-            <div className="bg-emerald-600 p-4 rounded-full text-5xl">
-              🐺
-            </div>
+    <div className="min-h-screen bg-[#FDFBF7] flex flex-col justify-center py-12 sm:px-6 lg:px-8 bg-[url('https://www.transparenttextures.com/patterns/leaves-pattern.png')]">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="flex justify-center">
+          <div className="w-20 h-20 bg-emerald-600 rounded-full flex items-center justify-center shadow-lg">
+            <PawPrint size={40} className="text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-emerald-900 mb-2">Mon Compagnon Loup</h1>
-          <p className="text-gray-600">Suivez et accompagnez votre fidèle ami</p>
         </div>
+        <h2 className="mt-6 text-center text-3xl font-extrabold text-emerald-900">
+          Mon Compagnon Loup
+        </h2>
+        <p className="mt-2 text-center text-sm text-gray-600">
+          {isLogin ? 'Connectez-vous à votre compte' : 'Créez votre compte maître'}
+        </p>
+      </div>
 
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-4">
-          <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="bg-white py-8 px-4 shadow-xl sm:rounded-2xl sm:px-10 border border-emerald-100">
+          <form className="space-y-6" onSubmit={handleAuth}>
+            {error && (
+              <div className="bg-red-50 text-red-700 p-3 rounded-lg text-sm text-center">
+                {error}
+              </div>
+            )}
+            
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                {isLogin ? 'Adresse email' : 'Adresse email'}
-              </label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="vous@exemple.com"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                required
-              />
+              <label className="block text-sm font-medium text-gray-700">Adresse Email</label>
+              <div className="mt-1">
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500"
+                />
+              </div>
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Nom complet
-              </label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Votre nom"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                required
-              />
+              <label className="block text-sm font-medium text-gray-700">Mot de passe</label>
+              <div className="mt-1">
+                <input
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-emerald-500 focus:border-emerald-500"
+                />
+              </div>
             </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-emerald-600 text-white py-3 rounded-lg font-bold hover:bg-emerald-700 transition-colors disabled:opacity-50"
-            >
-              {loading ? 'Chargement...' : isLogin ? 'Se connecter' : 'Créer un compte'}
-            </button>
+            <div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50"
+              >
+                {loading ? 'Chargement...' : (isLogin ? 'Se connecter' : "S'inscrire")}
+              </button>
+            </div>
           </form>
 
-          <div className="flex items-center my-4">
-            <div className="flex-1 h-px bg-gray-300" />
-            <span className="px-3 text-gray-500 text-sm">OU</span>
-            <div className="flex-1 h-px bg-gray-300" />
-          </div>
-
-          <button
-            onClick={() => {
-              login('google@example.com', 'Utilisateur Google');
-              navigate('/app/accueil');
-            }}
-            className="w-full flex items-center justify-center gap-2 border border-gray-300 py-3 rounded-lg font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
-          >
-            <span>🔵</span>
-            Continuer avec Google
-          </button>
-        </div>
-
-        <div className="text-center">
-          <p className="text-gray-600 text-sm">
-            {isLogin ? "Pas encore de compte ? " : "Déjà inscrit ? "}
+          <div className="mt-6 text-center">
             <button
-              onClick={() => {
-                setIsLogin(!isLogin);
-                setEmail('');
-                setName('');
-              }}
-              className="text-emerald-600 font-semibold hover:text-emerald-700"
+              onClick={() => setIsLogin(!isLogin)}
+              className="text-sm text-emerald-600 hover:text-emerald-500 font-semibold"
             >
-              {isLogin ? 'Créer un compte' : 'Se connecter'}
+              {isLogin ? "Pas encore de compte ? S'inscrire" : 'Déjà un compte ? Se connecter'}
             </button>
-          </p>
+          </div>
         </div>
       </div>
     </div>
