@@ -8,8 +8,7 @@ import { PetDataProvider } from './context/PetDataContext'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    {/* On ajoute le chemin du dépôt ici */}
-    <BrowserRouter basename="/pawstep">
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <AuthProvider>
         <PetDataProvider>
           <App />

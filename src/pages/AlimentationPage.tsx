@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { usePetData } from '../context/PetDataContext';
-import { PlusCircle, CheckCircle, Trash2 } from 'lucide-react';
+import { PlusCircle, CheckCircle } from 'lucide-react';
 import { Meal } from '../types';
 import { v4 as uuidv4 } from 'uuid';
 

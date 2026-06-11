@@ -5,7 +5,7 @@ import { usePetData } from '../context/PetDataContext';
 import { Plus, Settings, Lightbulb } from 'lucide-react';
 import { Pet } from '../types';
 import { v4 as uuidv4 } from 'uuid';
-import { calculateAge, formatDate, getDaysUntil } from '../utils/helpers';
+import { calculateAge } from '../utils/helpers';
 
 export default function AccueilPage() {
   const navigate = useNavigate();
@@ -24,6 +24,8 @@ export default function AccueilPage() {
       // Load data for current pet
     }
   }, [currentPet]);
+
+  const trainingTotal = (training?.assis ?? 0) + (training?.rappel ?? 0) + (training?.couche ?? 0);
 
   const handleAddPet = (e: React.FormEvent) => {
     e.preventDefault();
@@ -200,7 +202,7 @@ export default function AccueilPage() {
           <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl p-4 border border-emerald-200">
             <p className="text-sm text-gray-600">Dressage</p>
             <p className="text-3xl font-bold text-emerald-900">
-              {training?.assis || 0 + training?.rappel || 0 + training?.couche || 0}/15
+              {trainingTotal}/15
             </p>
             <p className="text-xs text-gray-600 mt-1">exercices faits</p>
           </div>

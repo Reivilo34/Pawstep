@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { CreditCard as Edit2, Camera } from 'lucide-react';
 import { DogProfile } from '../types';
-import { calculateAge, formatDate } from '../utils/helpers';
+import { calculateAge } from '../utils/helpers';
 
 interface ProfileSectionProps {
   profile: DogProfile;
