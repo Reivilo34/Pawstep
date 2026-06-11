@@ -40,3 +40,30 @@ export interface User {
   email: string;
   name: string;
 }
+
+export interface DogProfile {
+  name: string;
+  breed: string;
+  weight: number;
+  birthDate: string;
+  avatarUrl?: string;
+}
+
+export interface TrainingProgress {
+  assis: number;
+  rappel: number;
+  couche: number;
+  lastReset?: string;
+}
+
+export interface HealthData {
+  nextVaccineDate: string;
+  nextVetVisit: string;
+}
+
+export interface AppData {
+  profile: DogProfile;
+  training: TrainingProgress;
+  meals: Meal[];
+  health: HealthData;
+}

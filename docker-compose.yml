@@ -1,0 +1,8 @@
+services:
+  pawstep:
+    build:
+      context: .
+      args:
+        VITE_BASE_PATH: /
+    ports:
+      - "8080:80"

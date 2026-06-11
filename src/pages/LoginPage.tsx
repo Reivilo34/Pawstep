@@ -32,8 +32,9 @@ export default function LoginPage() {
         alert('Inscription réussie ! Vous pouvez maintenant vous connecter.');
         setIsLogin(true);
       }
-    } catch (error: any) {
-      setError(error.message || 'Une erreur est survenue.');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Une erreur est survenue.';
+      setError(message);
     } finally {
       setLoading(false);
     }

@@ -22,6 +22,7 @@ export default function FeedingSection({ meals, onAddMeal }: FeedingSectionProps
     if (quantity && parseFloat(quantity) > 0) {
       const newMeal: Meal = {
         id: Date.now().toString(),
+        petId: 'local',
         type: mealType,
         quantity: parseFloat(quantity),
         date: new Date().toISOString(),
